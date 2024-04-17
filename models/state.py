@@ -5,21 +5,23 @@ from models.base_model import BaseModel, Base
 from sqlalchemy import String, Column
 from sqlalchemy.orm import relationship
 from models.city import City
-from os import getenv
+import os
 
 
 class State(BaseModel, Base):
     """ State class """
-    __tablename__ = "states"
+    __tablename__ = 'states'
     name = Column(String(128), nullable=False)
-    cities = relationship("City",  backref="state", cascade="delete")
-
-    if getenv("HBNB_TYPE_STORAGE") != "db":
+    
+    if os.getenv('HBNB_TYPE_STORAGE') == 'db':
+        cities = relationship("City", passive_deletes=True, backref="state")
+    else:
         @property
         def cities(self):
             """ Getter attribute that returns the list of City instances """
-            city_list = []
-            for city in list(models.storage.all(City).values()):
+            cities_dict = models.storage.all('City')
+            cities_list = []
+            for city in cities_dict.values():
                 if city.state_id == self.id:
-                    city_list.append(city)
-            return city_list
+                    cities_list.append(city)
+            return cities_list

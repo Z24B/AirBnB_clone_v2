@@ -3,17 +3,29 @@
 import models
 from os import getenv
 from models.base_model import BaseModel, Base
-from models.amenity import Amenity
-from models.review import Review
+import models
 from sqlalchemy import Column, String, Integer, Float, ForeignKey, Table
 from sqlalchemy.orm import relationship
 
 
-association_table = Table("place_amenity", Base.metadata, Column(
-    "place_id", String(60),
-    ForeignKey("places.id"), primary_key=True, nullable=False),
-    Column("amenity_id", String(60), ForeignKey(
-        "amenities.id"), primary_key=True, nullable=False))
+place_amenity = Table(
+        "place_amenity",
+        Base.metadata,
+        Column(
+            "place_id",
+            String(60),
+            ForeignKey("places.id"),
+            primary_key=True,
+            nullable=False
+            ),
+        Column(
+            "amenity_id",
+            String(60),
+            ForeignKey("amenities.id"),
+            primary_key=True,
+            nullable=False
+            )
+        )
 
 
 class Place(BaseModel, Base):
@@ -50,8 +62,9 @@ class Place(BaseModel, Base):
         def amenities(self):
             """Get/set linked Amenities."""
             amenity_list = []
-            for amenity in list(models.storage.all(Amenity).values()):
-                if amenity.id in self.amenity_ids:
+            for amenity_id in self.amenity_ids:
+                amenity = models.storage.get("Amenity", amenity_id)
+                if amenity:
                     amenity_list.append(amenity)
             return amenity_list
 

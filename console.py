@@ -119,32 +119,46 @@ class HBNBCommand(cmd.Cmd):
         try:
             if not args:
                 raise SyntaxError()
-            my_list = args.split(" ")
 
-            kwargs = {}
-            for i in range(1, len(my_list)):
-                key, value = tuple(my_list[i].split("="))
-                if value[0] == '"':
-                    value = value.strip('"').replace("_", " ")
+            args_list = args.split(" ")
+            class_name = args_list[0]
+
+            if class_name not in self.classes:
+                print("** class doesn't exist **")
+                return
+
+            params = {}
+            for arg in args_list[1:]:
+                param_split = arg.split("=")
+                if len(param_split) != 2:
+                    continue
+
+                key, value = param_split
+                if value[0] == '"' and value[-1] == '"':
+                    value = value[1:-1].replace("_", " ")
+
+                if '.' in value:
+                    try:
+                        value = float(value)
+                    except ValueError:
+                        continue
                 else:
                     try:
-                        value = eval(value)
-                    except (SyntaxError, NameError):
+                        value = int(value)
+                    except ValueError:
                         continue
-                kwargs[key] = value
 
-            if kwargs == {}:
-                obj = eval(my_list[0])()
-            else:
-                obj = eval(my_list[0])(**kwargs)
-                storage.new(obj)
+                params[key] = value
+
+            obj = self.classes[class_name](**params)
+            storage.new(obj)
+            storage.save()
+
             print(obj.id)
-            obj.save()
-
         except SyntaxError:
             print("** class name missing **")
-        except NameError:
-            print("** class doesn't exist **")
+        except Exception as e:
+            print(e)
 
     def help_create(self):
         """ Help information for the create method """
