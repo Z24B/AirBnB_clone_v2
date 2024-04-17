@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" """
+"""Unit tests for BaseModel class """
 from models.base_model import BaseModel
 import unittest
 import datetime
@@ -9,10 +9,10 @@ import os
 
 
 class test_basemodel(unittest.TestCase):
-    """ """
+    """testing BaseModel class """
 
     def __init__(self, *args, **kwargs):
-        """ """
+        """Initializes the test class """
         super().__init__(*args, **kwargs)
         self.name = 'BaseModel'
         self.value = BaseModel
