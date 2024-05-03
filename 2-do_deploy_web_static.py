@@ -8,19 +8,6 @@ env.user = 'ubuntu'
 env.key_filename = ['/root/.ssh/id_rsa']
 
 
-def do_pack():
-    """tzg archive"""
-    try:
-        local('mkdir -p versions')
-        datetime_format = '%Y%m%d%H%M%S'
-        archive_path = 'versions/web_static_{}.tgz'.format(
-            datetime.now().strftime(datetime_format))
-        local('tar -cvzf {} web_static'.format(archive_path))
-        print('web_static packed: {} -> {}'.format(archive_path,
-              os.path.getsize(archive_path)))
-    except:
-        return None
-
 def do_deploy(archive_path):
     """Distributes an archive to web servers"""
     if not os.path.exists(archive_path):
@@ -41,5 +28,5 @@ def do_deploy(archive_path):
         run('ln -s {} /data/web_static/current'.format(releases_path))
         print('New version deployed!')
         return True
-    except:
+    except Exception:
         return False
