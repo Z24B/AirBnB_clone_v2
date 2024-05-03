@@ -1,18 +1,38 @@
 #!/usr/bin/python3
-"""Fabric script that distributes an archive to your web servers"""
-from fabric.api import env, run, put, sudo, local
+"""Fabric script that creates and distributes an archive to your web servers"""
+from fabric.api import env, run, put
 from datetime import datetime
 from os import path
+from pathlib import Path
 
 env.hosts = ['100.26.240.110', '54.157.160.220']
 env.user = 'ubuntu'
 env.key_filename = '/root/.ssh/id_rsa'
 
 
+def deploy():
+    """Creates and distributes an archive to web servers"""
+    archive_path = do_pack()
+    if archive_path is None:
+        return False
+    return do_deploy(archive_path)
+
+def do_pack():
+    """Generates a .tgz archive from the contents of the web_static folder"""
+    try:
+        local("mkdir -p versions")
+        now = datetime.now()
+        archive_name = "web_static_{}{}{}{}{}{}.tgz".format(
+                now.year, now.month, now.day, now.hour, now.minute, now.second)
+        local("tar -cvzf versions/{} web_static".format(archive_name))
+        return "versions/{}".format(archive_name)
+    except Exception:
+        return None
+
 def do_deploy(archive_path):
     """Distributes an archive to web servers"""
     if not path.exists(archive_path):
-    return False
+        return False
     try:
         put(archive_path, "/tmp/")
         name = archive_path.split('/')[1].split('.')[0]
@@ -29,7 +49,3 @@ def do_deploy(archive_path):
         return True
     except Exception:
         return False
-
-
-if __name__ == "__main__":
-    do_deploy()
