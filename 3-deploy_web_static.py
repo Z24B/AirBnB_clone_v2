@@ -3,26 +3,36 @@
 Fabric script that creates and distributes an archive to your web servers
 """
 
-from fabric.api import env, local, put, run
+from fabric.api import *
 from datetime import datetime
 from os.path import exists, isdir
 env.hosts = ['100.26.240.110', '54.157.160.220']
 
+
+def deploy():
+    """
+    Full deployment
+    """
+    archive_path = do_pack()
+    if not archive_path:
+        return False
+    return do_deploy(archive_path)
+
 def do_pack():
-    """Generates tgz archive"""
+    """Generates a .tgz archive from the contents of the web_static folder"""
     try:
-        date = datetime.now().strftime("%Y%m%d%H%M%S")
-        if isdir("versions") is False:
-            local("mkdir versions")
-        file_name = "versions/web_static_{}.tgz".format(date)
-        local("tar -cvzf {} web_static".format(file_name))
-        return file_name
-    except:
+        local("mkdir -p versions")
+        now = datetime.now()
+        archive_name = "web_static_{}{}{}{}{}{}.tgz".format(
+                now.year, now.month, now.day, now.hour, now.minute, now.second)
+        local("tar -cvzf versions/{} web_static".format(archive_name))
+        return "versions/{}".format(archive_name)
+    except Exception:
         return None
 
 
 def do_deploy(archive_path):
-    """distributes an archive to the web servers"""
+    """Distributes an archive to web servers"""
     if exists(archive_path) is False:
         return False
     try:
@@ -40,10 +50,3 @@ def do_deploy(archive_path):
         return True
     except:
         return False
-
-def deploy():
-    """Creates and Distributes archive to the web servers"""
-    archive_path = do_pack()
-    if archive_path is None:
-        return False
-    return do_deploy(archive_path)
