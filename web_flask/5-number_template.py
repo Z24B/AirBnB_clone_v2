@@ -3,7 +3,7 @@
 This module starts a Flask web application.
 """
 
-from flask import Flask
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
@@ -51,5 +51,14 @@ def number(n):
     return f"{n} is a number"
 
 
+@app.route('/number_template/<int:n>', strict_slashes=False)
+def number_template(n):
+    """
+    Route to display an HTML page only if n is an integer.
+    The HTML page contains an H1 tag: 'Number: n' inside the BODY.
+    """
+    return render_template('5-number.html', n=n)
+
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000i)
+    app.run(host="0.0.0.0", port=5000)
