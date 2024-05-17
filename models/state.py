@@ -14,11 +14,9 @@ class State(BaseModel, Base):
     name = Column(String(128), nullable=False)
 
     if os.getenv('HBNB_TYPE_STORAGE') == 'db':
-        cities = relationship("City", passive_deletes=True, backref="state")
-    else:
         @property
         def cities(self):
-            """ Getter attribute that returns the list of City instances """
+            """Getter attribute that returns the list of City objects"""
             cities_dict = models.storage.all('City')
             cities_list = []
             for city in cities_dict.values():
