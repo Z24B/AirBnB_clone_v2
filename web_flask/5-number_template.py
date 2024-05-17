@@ -54,8 +54,8 @@ def number(n):
 @app.route('/number_template/<int:n>', strict_slashes=False)
 def number_template(n):
     """
-    Route to display an HTML page only if n is an integer.
-    The HTML page contains an H1 tag: 'Number: n' inside the BODY.
+    Route to display a HTML page only if n is an integer.
+    The HTML page contains an H1 tag with 'Number: n'.
     """
     return render_template('5-number.html', n=n)
 
