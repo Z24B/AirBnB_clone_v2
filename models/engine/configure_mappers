@@ -1,0 +1,7 @@
+from models.engine.db_storage import DBStorage
+
+# Create an instance of DBStorage
+storage_instance = DBStorage()
+
+# Call the configure_mappers method on the instance
+storage_instance.configure_mappers()

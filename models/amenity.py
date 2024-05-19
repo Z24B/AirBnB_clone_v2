@@ -9,8 +9,10 @@ class Amenity(BaseModel, Base):
     """Amenity for database"""
     __tablename__ = 'amenities'
     name = Column(String(128), nullable=False)
-    place_amenities = relationship(
-            "Place", secondary="place_amenity", viewonly=False,
-            back_populates='amenities', overlaps="place_amenities")
+    places = relationship(
+        "Place",
+        secondary="place_amenity",
+        back_populates='amenities'
+    )
     place_id = Column(String(60), ForeignKey('places.id'), nullable=False)
     user_id = Column(String(60), ForeignKey('users.id'), nullable=False)

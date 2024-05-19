@@ -4,14 +4,12 @@ from os import getenv
 from models.base_model import BaseModel, Base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
-from models.base_model import Base
 from models.user import User
 from models.state import State
 from models.city import City
 from models.place import Place
 from models.amenity import Amenity
 from models.review import Review
-from sqlalchemy.orm import relationship
 
 
 class DBStorage:
@@ -33,17 +31,14 @@ class DBStorage:
 
     def all(self, cls=None):
         """Query on the current database session"""
-        if cls is None:
-            objs = self.__session.query(State).all()
-            objs.extend(self.__session.query(City).all())
-            objs.extend(self.__session.query(User).all())
-            objs.extend(self.__session.query(Place).all())
-            objs.extend(self.__session.query(Review).all())
-            objs.extend(self.__session.query(Amenity).all())
-        else:
-            if type(cls) is str:
+        if cls:
+            if isinstance(cls, str):
                 cls = eval(cls)
-                objs = self.__session.query(cls)
+            objs = self.__session.query(cls).all()
+        else:
+            objs = []
+            for model_class in [State, City, User, Place, Review, Amenity]:
+                objs.extend(self.__session.query(model_class).all())
         return {"{}.{}".format(type(o).__name__, o.id): o for o in objs}
 
     def new(self, obj):
@@ -69,4 +64,4 @@ class DBStorage:
 
     def close(self):
         """Call remove() method on the private session attribute"""
-        self.reload()
+        self.__session.remove()
