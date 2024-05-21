@@ -7,6 +7,7 @@ import uuid
 
 Base = declarative_base()
 
+
 class BaseModel(Base):
     """Base class for all models"""
 
@@ -22,12 +23,6 @@ class BaseModel(Base):
         self.created_at = datetime.utcnow()
         self.updated_at = self.created_at
 
-    def save(self, session):
-        """Save the object to the database"""
-        self.updated_at = datetime.utcnow()
-        session.add(self)
-        session.commit()
-
     def delete(self, session):
         """Delete the object from the database"""
         session.delete(self)
@@ -41,3 +36,13 @@ class BaseModel(Base):
             "updated_at": self.updated_at.isoformat(),
             "__class__": type(self).__name__,
         }
+
+    def save(self, session=None):
+        """Saves the current instance."""
+        if session:
+            session.add(self)
+            session.commit()
+        else:
+            from models import storage
+            storage.new(self)
+            storage.save()

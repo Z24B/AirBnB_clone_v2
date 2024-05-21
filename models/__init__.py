@@ -1,14 +1,14 @@
 #!/usr/bin/python3
-"""This module initializes the storage variable"""
-from models.engine.file_storage import FileStorage
-from models.engine.db_storage import DBStorage
+"""Initializes the models package"""
 from os import getenv
 
-storage_type = getenv('HBNB_TYPE_STORAGE')
+STORAGE_TYPE = getenv('HBNB_TYPE_STORAGE')
 
-if storage_type == 'db':
+if STORAGE_TYPE == 'db':
+    from models.engine.db_storage import DBStorage
     storage = DBStorage()
 else:
+    from models.engine.file_storage import FileStorage
     storage = FileStorage()
 
 storage.reload()

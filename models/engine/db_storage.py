@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 """This module defines the DBStorage class for HBNB project"""
 from os import getenv
-from models.base_model import BaseModel, Base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
+from models.base_model import BaseModel, Base
 from models.user import User
 from models.state import State
 from models.city import City
@@ -28,6 +28,11 @@ class DBStorage:
 
         if getenv('HBNB_ENV') == "test":
             Base.metadata.drop_all(self.__engine)
+
+        self.__session = scoped_session(sessionmaker(bind=self.__engine))
+
+        # Call configure_mappers to ensure all mappers are configured
+        configure_mappers()
 
     def all(self, cls=None):
         """Query on the current database session"""
@@ -55,13 +60,12 @@ class DBStorage:
             self.__session.delete(obj)
 
     def reload(self):
-        """Create all tables in the database"""
+        """Create all tables in the database and initialize the session"""
         Base.metadata.create_all(self.__engine)
-        session_factory = sessionmaker(bind=self.__engine,
-                                       expire_on_commit=False)
-        Session = scoped_session(session_factory)
-        self.__session = Session()
+        session_factory = sessionmaker(
+                bind=self.__engine, expire_on_commit=False)
+        self.__session = scoped_session(session_factory)
 
     def close(self):
-        """Call remove() method on the private session attribute"""
+        """Remove the current session"""
         self.__session.remove()
