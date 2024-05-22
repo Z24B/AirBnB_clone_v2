@@ -22,7 +22,8 @@ def states_cities(id):
     state = storage.get(State, id)
     if state:
         cities = sorted(state.cities, key=lambda city: city.name)
-        return render_template('10-states_cities.html', state=state, cities=cities)
+        return render_template(
+                '10-states_cities.html', state=state, cities=cities)
     else:
         return render_template('10-not_found.html')
 
