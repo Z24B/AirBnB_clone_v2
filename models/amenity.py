@@ -2,21 +2,24 @@
 """
 Amenity file
 """
-import os
+import models
 from models.base_model import BaseModel, Base
-from sqlalchemy.orm import relationship
+from os import getenv
+import sqlalchemy
 from sqlalchemy import Column, String
+from sqlalchemy.orm import relationship
 
-STORAGE_TYPE = os.environ.get('HBNB_TYPE_STORAGE')
+STORAGE_TYPE = "db"
 
 
 class Amenity(BaseModel, Base):
-    """Amenity class handles all application amenities"""
-    __tablename__ = 'amenities'
-
+    """Representation of Amenity """
     if STORAGE_TYPE == "db":
+        __tablename__ = 'amenities'
         name = Column(String(128), nullable=False)
-        place_amenities = relationship('Place', secondary='place_amenity',
-                                       back_populates='amenities')
     else:
-        name = ''
+        name = ""
+
+    def __init__(self, *args, **kwargs):
+        """initializes Amenity"""
+        super().__init__(*args, **kwargs)

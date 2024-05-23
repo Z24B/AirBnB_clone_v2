@@ -10,6 +10,7 @@ from models.amenity import Amenity
 from models.review import Review
 from models.base_model import BaseModel
 
+
 class FileStorage:
     """This class manages storage of hbnb models in JSON format"""
     __file_path = 'file.json'
@@ -39,8 +40,7 @@ class FileStorage:
                 data = json.load(f)
                 for key, value in data.items():
                     cls_name = key.split('.')[0]
-                    cls_id = key.split('.')[1]
-                    cls = models.classes.get(cls_name)
+                    cls = getattr(models, cls_name)
                     self.__objects[key] = cls(**value)
         except FileNotFoundError:
             pass
